@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+<style>
+
+#box {
+    font-size: 50px;
+}
+
+
+#button {
+  
+    height: 50px; 
+    background-color: red;
+    font-size: 30px;
+}
+
+.input_things {
+    display: flex;
+    justify-content: center;
+    gap:10px;
+    width: 500px; 
+    padding: 10px;
+    background-color: gray;
+}
+
+
+#input {
+    font-size: 25px;
+}
+</style>
+
+</head>
+<body>
+
+    
+
+
+
+<div id="box">Hello</div>
+<div class="input_things">
+    <input id="input"  type="text">
+    <button onclick="change_color('box', 'blue')" id="button">Click me</button>
+</div>
+
+
+<script>
+  const box = document.getElementById("box");
+
+    function change_color(element_id, color) {
+        const color_e = document.getElementById("input").value;
+        console.log(color_e)
+        const element = document.getElementById(element_id)
+        element.style.color = color_e;
+    }
+
+
+  box.style.color = "red";
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>
