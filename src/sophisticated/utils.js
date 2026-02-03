@@ -78,3 +78,49 @@
 
 
 
+
+
+//   function createBox(i) {
+//   const main = {
+//     x: 100,
+//     y: ROWHEIGHT * i + 200,
+//     width: BOXWIDTH,
+//     height: BOXHEIGHT,
+//   };
+
+//   const source = () => {
+//       return {
+//         x: main.x + main.width - sourceSize / 2 - 10,
+//         y: main.y + main.height / 2 - sourceSize / 2,
+//         width: sourceSize,
+//         height: sourceSize,
+//         middle_x: main.x + main.width,
+//         middle_y: main.y + main.height / 2,
+//       };
+//     };
+
+//     const target = () => {
+//       return {
+//         x: main.x - sourceSize / 2 + 10,
+//         y: main.y + main.height / 2 - sourceSize / 2,
+//         width: sourceSize,
+//         height: sourceSize,
+//         middle_x: main.x,
+//         middle_y: main.y + main.height / 2,
+//       };
+//     };
+
+//     const data = {
+//       parent: i,
+//     }
+
+
+//   return {
+//     main,
+//     source, 
+//     target, 
+//     data 
+
+
+//   };
+// }

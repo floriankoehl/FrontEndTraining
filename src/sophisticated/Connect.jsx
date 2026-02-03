@@ -1,151 +1,184 @@
 import { useEffect, useState } from "react";
 import Button from "@mui/material/Button";
-import clickSound from "../assets/click.wav"
-import {snap_vertically, snap_horizontally, handleLockedChildPosition, createBezierPath} from "./utils.js"
+import clickSound from "../assets/click.wav";
+import {
+  snap_vertically,
+  snap_horizontally,
+  handleLockedChildPosition,
+  createBezierPath,
+} from "./utils.js";
 
-
-
-const audio = new Audio(clickSound)
-audio.volume = 0.3; 
 // Globals
+const audio = new Audio(clickSound);
+audio.volume = 0.3;
+
 const sourceSize = 10;
-const ROWWIDTH = 15*70;
+const ROWWIDTH = 15 * 70;
+const COLWIDTH = 70;
 const ROWHEIGHT = 70;
 const BOXHEIGHT = 70;
 const BOXWIDTH = 70;
 
-const DAYWIDTH = 70;
 
 export default function Connect() {
   const [boxes, setBoxes] = useState({});
   const [rows, setRows] = useState({});
   const [numTasks, setNumTasks] = useState(4);
   const [numRows, setNumRows] = useState(6);
-  const [numCol, setNumCol] = useState(15);
+  const [numCol, setNumCol] = useState(7);
   const [cols, setCols] = useState({});
   const [colHeight, setColHeight] = useState(800);
   const [locked, setLocked] = useState(true);
   const [cursor, setCursor] = useState("default");
   const [connections, setConnections] = useState([]);
   const [selectedConnection, setSelectedConnection] = useState(null);
-  const [drag, setDrag] = useState({active: false, startX: 0, startY: 0, x: 0, y: 0});
+  const [drag, setDrag] = useState({
+    active: false,
+    startX: 0,
+    startY: 0,
+    x: 0,
+    y: 0,
+  });
 
 
 
 
-  
 
-
-
-
-
-
-  // initialize Boxes (aka Tasks)
-  useEffect(() => {
-    const result = {};
-    for (let i = 0; i < numTasks; i++) {
-      result[i] = {
-        main: {
-          x: 100,
-          y: ROWHEIGHT * i + 200,
-          width: BOXWIDTH,
-          height: BOXHEIGHT,
-        },
-        source() {
-          return {
-            x: this.main.x + this.main.width - sourceSize / 2 - 10,
-            y: this.main.y + this.main.height / 2 - sourceSize / 2,
-            width: sourceSize,
-            height: sourceSize,
-            middle_x: this.main.x + this.main.width,
-            middle_y: this.main.y + this.main.height / 2,
-          };
-        },
-        target() {
-          return {
-            x: this.main.x - sourceSize / 2 + 10,
-            y: this.main.y + this.main.height / 2 - sourceSize / 2 ,
-            width: sourceSize,
-            height: sourceSize,
-            middle_x: this.main.x,
-            middle_y: this.main.y + this.main.height / 2,
-          };
-        },
-
-        data: {
-          parent: 0 + i,
-        },
-      };
-    }
-    setBoxes(result);
-  }, []);
-
-
-useEffect(() => {
-  setBoxes((prev) => ({
-    ...prev,
-    [numTasks]: {  // ← Add new box at index numTasks
-      main: {
-        x: 100,
-        y: ROWHEIGHT + 200,
-        width: BOXWIDTH,
-        height: BOXHEIGHT,
-      },
+  // Factories
+  const createBox = ({ x, y, width, height, handle_size, parent_key }) => {
+    return {
+      main: { x, y, width, height },
       source() {
         return {
-          x: this.main.x + this.main.width - sourceSize / 2 - 10,
-          y: this.main.y + this.main.height / 2 - sourceSize / 2,
-          width: sourceSize,
-          height: sourceSize,
+          x: this.main.x + this.main.width - handle_size / 2 - 10,
+          y: this.main.y + this.main.height / 2 - handle_size / 2,
+          width: handle_size,
+          height: handle_size,
           middle_x: this.main.x + this.main.width,
           middle_y: this.main.y + this.main.height / 2,
         };
       },
       target() {
         return {
-          x: this.main.x - sourceSize / 2 + 10,
-          y: this.main.y + this.main.height / 2 - sourceSize / 2,
-          width: sourceSize,
-          height: sourceSize,
+          x: this.main.x - handle_size / 2 + 10,
+          y: this.main.y + this.main.height / 2 - handle_size / 2,
+          width: handle_size,
+          height: handle_size,
           middle_x: this.main.x,
           middle_y: this.main.y + this.main.height / 2,
         };
       },
       data: {
-        parent: 0,
+        parent: parent_key,
       },
-    },
-  }));
-}, [numTasks]);
+    };
+  };
 
-  // Initialize Rows (aka Groups)
-  useEffect(() => {
-    const RowsCreated = {};
-    for (let i = 0; i < numRows; i++) {
-      RowsCreated[i] = {
+  const createRow = ({ x, y, height, width}) => {
+    return {
+      x: x,
+      y: y, 
+      height: height, 
+      width: width
+    }
+  }
+
+  const createCol = ({x, y, height, width}) => {
+    return {
+      x: x, 
+      y: y, 
+      height: height, 
+      width: width
+    }
+  }
+
+
+
+
+
+  // Index-based layout helpers
+  const createBoxFromIndex = (index) => {
+    return createBox({
+      x: 100,
+      y: ROWHEIGHT * index + 200,
+      width: BOXWIDTH,
+      height: BOXHEIGHT,
+      handle_size: sourceSize,
+      parent_key: index
+    });
+  };
+
+  const createRowFromIndex = (index, numCols) => {
+    return createRow({
         x: 100,
-        y: ROWHEIGHT * i + 200,
+        y: ROWHEIGHT * index + 200,
         height: ROWHEIGHT,
-        width: ROWWIDTH,
-      };
-    }
-    setRows(RowsCreated);
+        width: numCol * COLWIDTH,
+    })
+  }
 
-    const DaysCreated = {};
-    for (let i = 0; i < numCol; i++) {
-      DaysCreated[i] = {
-        x: DAYWIDTH * i + 100,
-        y: 200 ,
-        height: numRows*ROWHEIGHT,
-        width: DAYWIDTH,
-      };
-    }
-    setCols(DaysCreated)
+  const createColFromIndex = (index, numRows) => {
+    return createCol({
+        x: COLWIDTH * index + 100,
+        y: 200,
+        height: numRows * ROWHEIGHT,
+        width: COLWIDTH,
+    })
+  }
 
-    setColHeight(numRows*ROWHEIGHT)
-    
-    
-  }, [numRows]);
+
+  // Layout Builder
+  const computeGridLayout = (numRows, numCols) => {
+    const rows = {};
+    for (let i = 0; i < numRows; i++) {
+      rows[i] = createRowFromIndex(i);
+    }
+
+    const cols = {};
+    for (let i = 0; i < numCols; i++) {
+      cols[i] = createColFromIndex(i, numRows);
+    }
+
+    const colHeight = numRows * ROWHEIGHT;
+
+    return { rows, cols, colHeight };
+  };
+
+
+
+
+  // Compute grid Layout
+  useEffect(() => {
+    const {rows, cols, colHeight} = computeGridLayout(numRows, numCol)
+
+    setRows(rows)
+    setCols(cols)
+    setColHeight(colHeight)
+  }, [numRows, numCol]);
+  
+
+  // initialize Boxes (aka Tasks)
+  useEffect(() => {
+    const result = {};
+    for (let i = 0; i < numTasks; i++) {
+      result[i] = createBoxFromIndex(i);
+    }
+    setBoxes(result);
+  }, []);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   // Update cursor
   useEffect(() => {
@@ -172,7 +205,7 @@ useEffect(() => {
     };
 
     const up = (e) => {
-      audio.play()
+      audio.play();
       setDrag({
         active: false,
         startX: 0,
@@ -228,21 +261,21 @@ useEffect(() => {
 
     const onMouseUp = () => {
       let snapped_y = current_y;
-      let snapped_x = current_x
+      let snapped_x = current_x;
 
       for (let i = 0; i < Object.keys(rows).length; i++) {
         snapped_y = snap_vertically(snapped_y, rows[i].y, rows[i].height);
-        if (snapped_y != current_y){
+        if (snapped_y != current_y) {
           boxes[key].data.parent = i;
-          break
+          break;
         }
       }
 
-      for (let i = 0; i < Object.keys(cols).length; i ++){
-        snapped_x = snap_horizontally(snapped_x, cols[i].x, cols[i].width)
+      for (let i = 0; i < Object.keys(cols).length; i++) {
+        snapped_x = snap_horizontally(snapped_x, cols[i].x, cols[i].width);
       }
 
-      audio.play()
+      audio.play();
       setBoxes((prev) => ({
         ...prev,
         [key]: {
@@ -264,15 +297,6 @@ useEffect(() => {
     document.addEventListener("mouseup", onMouseUp);
   };
 
-
-
-
-
-
-
-
-
-
   return (
     <div className="w-screen h-screen bg-gray-200 relative">
       <Button
@@ -289,11 +313,19 @@ useEffect(() => {
         }}
         variant="contained"
       >
+        Add Task
+      </Button>
+      <Button
+        onClick={() => {
+          setNumCol(numCol + 1);
+        }}
+        variant="contained"
+      >
         Add Day
       </Button>
       <Button
         onClick={() => {
-          setLocked(!locked)
+          setLocked(!locked);
         }}
         variant="contained"
         color="error"
@@ -302,24 +334,20 @@ useEffect(() => {
       </Button>
 
       {/* Days */}
-        {Object.entries(cols).map(([key, value])=>{
-          return (
-
-            <div 
+      {Object.entries(cols).map(([key, value]) => {
+        return (
+          <div
             className="border-r absolute z-100 pointer-events-none"
             style={{
               top: value.y,
               left: value.x,
               width: value.width,
-              height: value.height
+              height: value.height,
             }}
-            key={`${key}_day`}>
-
-          </div>
-          )
-        })}
-
-
+            key={`${key}_day`}
+          ></div>
+        );
+      })}
 
       {/* Rows */}
       {Object.entries(rows).map(([key, value]) => {
@@ -336,7 +364,6 @@ useEffect(() => {
           ></div>
         );
       })}
-
 
       {/* Boxes & Connections */}
       {Object.values(boxes).map((box, i) => (
@@ -355,9 +382,7 @@ useEffect(() => {
               height: box.main.height,
             }}
           >
-            <div className="h-full w-full bg-gray-200 rounded-xl">
-
-            </div>
+            <div className="h-full w-full bg-gray-200 rounded-xl"></div>
           </div>
 
           {/* Source */}
@@ -399,7 +424,6 @@ useEffect(() => {
           ></div>
         </div>
       ))}
-
 
       {/* SVG Animation */}
       <style>{`
