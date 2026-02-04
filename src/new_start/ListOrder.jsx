@@ -1,26 +1,32 @@
 import { useEffect, useState } from "react";
 import Button from "@mui/material/Button";
+import GradeIcon from '@mui/icons-material/Grade';
+import ZoomOutIcon from '@mui/icons-material/ZoomOut';
 
 const INITIAL_GROUPS = {
   Logistik: {
-    tasks: ["Aufbau koordinieren", "Abbau planen", "Materialtransport"]
+    tasks: [
+    {name: "Aufbau koordinieren", collapsed: false}, 
+    {name: "Abbau planen", collapsed: false}, 
+    {name: "Materialtransport", collapsed: false}
+    ]
   },
   Gastronomie: 
   {
     tasks: [
-    "Getränkebestellung",
-    "Bar-Plan erstellen",
-    "Personal einteilen",
+    {name: "Getränkebestellung", collapsed: false},
+    {name: "Bar-Plan erstellen", collapsed: false},
+    {name: "Personal einteilen", collapsed: false},
   ]
   },
   Unterhaltung: 
   {
     tasks: [
-    "Rahmenprogramm planen",
-    "Moderation organisieren",
-    "Special Acts koordinieren",
-    "Ideen finden",
-    "mehr und mehr"
+    {name: "Rahmenprogramm planen", collapsed: false},
+    {name: "Moderation organisieren", collapsed: false},
+    {name: "Special Acts koordinieren", collapsed: false},
+    {name: "Ideen finden", collapsed: false},
+    {name: "mehr und mehr", collapsed: true}
   ],
   },
 
@@ -37,12 +43,15 @@ const groupKeys = Object.keys(INITIAL_GROUPS);
 for (let i = 0; i < groupKeys.length; i++) {
   const group_key = groupKeys[i];
 
+    const num_active_groups = INITIAL_GROUPS[group_key].tasks.filter(item => !item.collapsed).length
+    console.log("FOr group ,", group_key, num_active_groups)
+
   modified_groups[group_key] = {
     collapsed: false,
     order_number: i,
     x: 0,
     y: 0,
-    height: TASKHEIGHT * INITIAL_GROUPS[group_key].tasks.length,
+    height: TASKHEIGHT * num_active_groups,
     width: GROUPWIDTH,
     tasks: INITIAL_GROUPS[group_key].tasks
   };
@@ -64,14 +73,20 @@ export default function ListOrder() {
     const new_groups = {};
     let accumalative_height = 0;
 
-    // console.log("_____STARTING______")
-    // console.log("_____STARTING______")
-    // console.log("_____STARTING______")
-    // console.log("_____STARTING______")
+
+
     for (let group_index in groupOrder) {
       const group_key = groupOrder[group_index];
       const group = groups[group_key];
-      const group_height = group.height;
+      let group_height = group.height;
+        const num_active_groups = group.tasks.filter(item => !item.collapsed).length
+        console.log("also while rebuilding", num_active_groups)
+
+        if (!group.collapsed) {
+            group_height = TASKHEIGHT * num_active_groups
+        }
+
+
 
       new_groups[group_key] = {
         collapsed: group.collapsed,
@@ -85,7 +100,7 @@ export default function ListOrder() {
       accumalative_height += group_height;
     }
 
-    console.log("Changed", new_groups)
+    console.log("NEW GROUPS: ", new_groups)
     setGroups(new_groups);
   }, [groupOrder, rebuildGroups]);
 
@@ -101,6 +116,41 @@ export default function ListOrder() {
 
     setGroupOrder(copy_order_groups);
   };
+
+
+
+   const swapIndeces = (list, from_index, to_index) => {
+        const swappedList = [...list]
+
+        const [popped_element] = swappedList.splice(from_index, 1)
+        swappedList.splice(to_index, 0, popped_element)
+
+        return swappedList
+  }
+
+
+  const putTaskonTop = (group, index) => {
+    const group_tasks = groups[group].tasks
+    const from_index = group_tasks.indexOf(index)
+
+    const updated_list = swapIndeces(group_tasks, from_index, 0)
+
+
+    setGroups((prev)=> {
+        return ({
+            ...prev, 
+            [group]: {
+                ...prev[group],
+                        tasks: updated_list
+            }
+
+        })
+    })
+    setRebuildGroups(rebuildGroups+1)
+  }
+
+
+
 
   // Complete Drag and Drop functionality
   const onMouseDown = (event, key) => {
@@ -158,6 +208,9 @@ export default function ListOrder() {
   const change_height = (key) => {
     setGroups((prev) => {
       const nextCollapsed = !prev[key].collapsed;
+      console.log("also here the key", prev[key])
+      const num_acitve_groups = prev[key].tasks.filter(item => !item.collapsed).length
+        console.log("also here the key", num_acitve_groups)
 
       return {
         ...prev,
@@ -166,13 +219,21 @@ export default function ListOrder() {
           collapsed: nextCollapsed,
           height: nextCollapsed
             ? GROUP_COLLAPSE_HEIGHT
-            : TASKHEIGHT * prev[key].tasks.length,
+            : TASKHEIGHT * num_acitve_groups,
         },
       };
     });
 
     setRebuildGroups((v) => v + 1);
   };
+
+
+ 
+
+
+
+
+
 
   return (
     <>
@@ -207,18 +268,54 @@ export default function ListOrder() {
                 <div className="flex flex-col">
                 {Object.entries(value.tasks).map(([task_key, task_value])=>{
                     return (
-                        
-                        <div 
+                      <div
                         style={{
-                            display: value.collapsed ? "none" : "block",
-                            height: `${TASKHEIGHT}px`,
-                            width: "200px"
+                          display: (value.collapsed || task_value.collapsed) ? "none" : "block",
+                          height: `${TASKHEIGHT}px`,
+                          width: "250px",
                         }}
-                        className="bg-white border"
-                        key={task_key}>
-                        {task_value}
+                        className="bg-white border relative"
+                        key={`${task_key}_${task_value.name}`}
+                      >
+                        {task_value.name}
+                        <div className="absolute top-0 right-0 flex">
+                          <div
+                            className="hover:text-blue-700!"
+                            onClick={() => {
+                              putTaskonTop(key, task_value);
+                            }}
+                          >
+                            <GradeIcon />
+                          </div>
+
+                          <div
+                            className=" hover:text-blue-500!"
+                            onClick={() => {
+                              setGroups((prev)=>{
+                                
+                                return {
+                                  ...prev,
+                                  [key]: {
+                                    ...prev[key],
+                                    tasks: prev[key].tasks.map((task, index) =>
+                                      index === Number(task_key)
+                                        ? {
+                                            ...task,
+                                            collapsed: !task.collapsed,
+                                          }
+                                        : task,
+                                    ),
+                                  },
+                                };
+                              })
+                              setRebuildGroups(rebuildGroups+1)
+                            }}
+                          >
+                            <ZoomOutIcon />
+                          </div>
                         </div>
-                    )
+                      </div>
+                    );
                 })}
                 </div>
 
@@ -235,13 +332,23 @@ export default function ListOrder() {
 
 
                 
-                <div className="absolute bottom-0 left-0">
+                <div 
+                
+                style={{
+                display: groups[key].collapsed ? "block" : "flex",
+                
+                }}
+
+                className="absolute bottom-1 left-1 flex flex-col gap-1">
                   <Button
                     className="h-[15px]"
                     onClick={() => {
                       change_order(groups[key].order_number, 0);
                     }}
                     variant="contained"
+                    style={{
+                        marginRight: groups[key].collapsed ? 3 : 0,
+                    }}
                   >
                     On Top
                   </Button>
@@ -252,8 +359,35 @@ export default function ListOrder() {
                     }}
                     variant="contained"
                     color="success"
+                    style={{
+                        marginRight: groups[key].collapsed ? 3 : 0,
+                    }}
                   >
                     Resize
+                  </Button>
+                  <Button
+                    className="h-[15px]"
+                    onClick={() => {
+                      setGroups((prev)=>{
+                        return ({
+                            ...prev, 
+                            [key]: {
+                                ...prev[key],
+                                tasks: prev[key].tasks.map((task)=>{
+                                    return (
+                                         {...task, collapsed: false}
+                                    )
+                                   
+                                })
+                            }
+                        })
+                      })
+                      setRebuildGroups(rebuildGroups+1)
+                    }}
+                    variant="contained"
+                    color="error"
+                  >
+                    Show All
                   </Button>
                 </div>
               </div>
