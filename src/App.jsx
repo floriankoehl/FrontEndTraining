@@ -14,6 +14,8 @@ import Resize from "./Resize"
 import MyArrows from "./MyArrows"
 import SVG from "./SVG"
 import Connect from "./sophisticated/Connect"
+import Prototype from "./new_start/simplest_reorder"
+import ListOrder from "./new_start/ListOrder"
 
 
 export default function App(){
@@ -69,7 +71,9 @@ export default function App(){
           <New color={"#a6ff94e3"} y_offset={200} />  */}
           {/* <Objects/> */}
           {/* <MyArrows/> */}
-          <Connect/>
+          {/* <Connect/> */}
+          {/* <Prototype/> */}
+          <ListOrder/>
           {/* <SVG/> */}
           {/* <MyClass/> */}
           

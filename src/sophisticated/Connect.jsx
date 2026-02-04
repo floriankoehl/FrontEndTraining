@@ -20,14 +20,65 @@ const BOXHEIGHT = 70;
 const BOXWIDTH = 70;
 
 
+
+
+
+
+
+const INITIAL_TASKS = [
+  {
+    name: "Konzept",
+    team: "Vorstand"
+  },
+  {
+    name: "Bar-Plan",
+    team: "Gastronomie"
+  },
+  {
+    name: "Event-Setup",
+    team: "Logistik"
+  },
+  {
+    name: "Musik",
+    team: "Unterhaltung"
+  },
+  {
+    name: "Finanzen",
+    team: "Vorstand"
+  },
+]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 export default function Connect() {
   const [boxes, setBoxes] = useState({});
-  const [rows, setRows] = useState({});
-  const [numTasks, setNumTasks] = useState(4);
-  const [numRows, setNumRows] = useState(6);
+  const [numBoxes, setNumBoxes] = useState(4);
+
+  const [tasks, setTasks] = useState(INITIAL_TASKS);
+
   const [numCol, setNumCol] = useState(7);
   const [cols, setCols] = useState({});
+
+  // const [numRows, setNumRows] = useState(6);
+
   const [colHeight, setColHeight] = useState(800);
+
+
+
+
   const [locked, setLocked] = useState(true);
   const [cursor, setCursor] = useState("default");
   const [connections, setConnections] = useState([]);
@@ -41,6 +92,16 @@ export default function Connect() {
   });
 
 
+
+
+
+
+
+
+
+  // useEffect(()=>{
+  //   setRows(INITIAL_TASKS)
+  // })
 
 
 
@@ -94,8 +155,6 @@ export default function Connect() {
 
 
 
-
-
   // Index-based layout helpers
   const createBoxFromIndex = (index) => {
     return createBox({
@@ -117,31 +176,32 @@ export default function Connect() {
     })
   }
 
-  const createColFromIndex = (index, numRows) => {
+  const createColFromIndex = (index, tasks_length) => {
     return createCol({
         x: COLWIDTH * index + 100,
         y: 200,
-        height: numRows * ROWHEIGHT,
+        height: tasks_length * ROWHEIGHT,
         width: COLWIDTH,
     })
   }
 
 
   // Layout Builder
-  const computeGridLayout = (numRows, numCols) => {
-    const rows = {};
-    for (let i = 0; i < numRows; i++) {
-      rows[i] = createRowFromIndex(i);
+  const computeGridLayout = (tasks_length, numCols) => {
+    const created_tasks = [];
+    for (let i = 0; i < tasks_length; i++) {
+      const new_task = createRowFromIndex(i);
+      created_tasks.push(new_task)
     }
 
     const cols = {};
     for (let i = 0; i < numCols; i++) {
-      cols[i] = createColFromIndex(i, numRows);
+      cols[i] = createColFromIndex(i, tasks_length);
     }
 
-    const colHeight = numRows * ROWHEIGHT;
+    const colHeight = tasks_length * ROWHEIGHT;
 
-    return { rows, cols, colHeight };
+    return { created_tasks, cols, colHeight };
   };
 
 
@@ -149,18 +209,18 @@ export default function Connect() {
 
   // Compute grid Layout
   useEffect(() => {
-    const {rows, cols, colHeight} = computeGridLayout(numRows, numCol)
+    const {created_tasks, cols, colHeight} = computeGridLayout(tasks.length, numCol)
 
-    setRows(rows)
+    setTasks(created_tasks)
     setCols(cols)
     setColHeight(colHeight)
-  }, [numRows, numCol]);
+  }, [tasks.length, numCol]);
   
 
   // initialize Boxes (aka Tasks)
   useEffect(() => {
     const result = {};
-    for (let i = 0; i < numTasks; i++) {
+    for (let i = 0; i < numBoxes; i++) {
       result[i] = createBoxFromIndex(i);
     }
     setBoxes(result);
@@ -184,6 +244,10 @@ export default function Connect() {
   useEffect(() => {
     document.body.style.cursor = cursor;
   }, [cursor]);
+
+
+
+
 
   // startDrag
   const startDrag = (e, key) => {
@@ -236,7 +300,7 @@ export default function Connect() {
 
       const result = handleLockedChildPosition(
         boxes[key].main,
-        rows[boxes[key].data.parent],
+        tasks[boxes[key].data.parent],
         new_x,
         new_y,
         locked,
@@ -263,8 +327,8 @@ export default function Connect() {
       let snapped_y = current_y;
       let snapped_x = current_x;
 
-      for (let i = 0; i < Object.keys(rows).length; i++) {
-        snapped_y = snap_vertically(snapped_y, rows[i].y, rows[i].height);
+      for (let i = 0; i < tasks.length; i++) {
+        snapped_y = snap_vertically(snapped_y, tasks[i].y, tasks[i].height);
         if (snapped_y != current_y) {
           boxes[key].data.parent = i;
           break;
@@ -301,20 +365,20 @@ export default function Connect() {
     <div className="w-screen h-screen bg-gray-200 relative">
       <Button
         onClick={() => {
-          setNumTasks(numTasks + 1);
+          setNumTasks(numBoxes + 1);
         }}
         variant="contained"
       >
         Add Task
       </Button>
-      <Button
+      {/* <Button
         onClick={() => {
           setNumRows(numRows + 1);
         }}
         variant="contained"
       >
         Add Task
-      </Button>
+      </Button> */}
       <Button
         onClick={() => {
           setNumCol(numCol + 1);
@@ -349,8 +413,8 @@ export default function Connect() {
         );
       })}
 
-      {/* Rows */}
-      {Object.entries(rows).map(([key, value]) => {
+      {/* Tasks */}
+      {Object.entries(tasks).map(([key, value]) => {
         return (
           <div
             className="absolute border-b rounded bg-white select-none"
