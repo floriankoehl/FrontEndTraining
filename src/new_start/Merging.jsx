@@ -1,8 +1,11 @@
-import { useEffect, useState } from "react"
+import { useEffect, useState, useRef } from "react"
 import Button from "@mui/material/Button";
 import ZoomOutIcon from '@mui/icons-material/ZoomOut';
 import GradeIcon from '@mui/icons-material/Grade';
 import { width } from "@mui/system";
+import clickSound from "../assets/click.wav";
+const audio = new Audio(clickSound);
+audio.volume = 0.3;
 
 
 const INITAL_TEAM_ORDER = ["Logistik", "Gatronomie", "Unterhaltung", "Vostand", "Musik"]
@@ -200,107 +203,110 @@ const INITIAL_TASKS = {
 
 
 const INITIAL_MILESTONES = {
+  // LOGISTIK MILESTONES
   "Aufbau-Plan Konzept": {
     task: "Aufbau-Plan",
-    order_number: 0,
-    incoming_edges: [],
-    outgoing_edges: [],
+    order_number: 2,
+    incoming_edges: ["VA-Konzept Finish"],
+    outgoing_edges: ["Aufbau-Plan Finish", "Event-Setup Konzept"],
   },
   "Aufbau-Plan Finish": {
     task: "Aufbau-Plan",
-    order_number: 1,
-    incoming_edges: [],
-    outgoing_edges: [],
+    order_number: 8,
+    incoming_edges: ["Aufbau-Plan Konzept"],
+    outgoing_edges: ["Abbau-Plan Konzept"],
   },
 
   "Abbau-Plan Konzept": {
     task: "Abbau-Plan",
-    order_number: 0,
-    incoming_edges: [],
-    outgoing_edges: [],
+    order_number: 10,
+    incoming_edges: ["Aufbau-Plan Finish"],
+    outgoing_edges: ["Abbau-Plan Finish"],
   },
   "Abbau-Plan Finish": {
     task: "Abbau-Plan",
-    order_number: 1,
-    incoming_edges: [],
+    order_number: 18,
+    incoming_edges: ["Abbau-Plan Konzept"],
     outgoing_edges: [],
   },
 
   "Event-Setup Konzept": {
     task: "Event-Setup",
-    order_number: 0,
-    incoming_edges: [],
-    outgoing_edges: [],
+    order_number: 5,
+    incoming_edges: ["Aufbau-Plan Konzept"],
+    outgoing_edges: ["Event-Setup Finish"],
   },
   "Event-Setup Finish": {
     task: "Event-Setup",
-    order_number: 1,
-    incoming_edges: [],
+    order_number: 14,
+    incoming_edges: ["Event-Setup Konzept", "Bar-Setup Finish"],
     outgoing_edges: [],
   },
 
+  // GASTRONOMIE MILESTONES
   "Bar-Plan Konzept": {
-    task: "Bar-Plan",
-    order_number: 0,
-    incoming_edges: [],
-    outgoing_edges: [],
-  },
-  "Bar-Plan Finish": {
     task: "Bar-Plan",
     order_number: 1,
     incoming_edges: [],
-    outgoing_edges: [],
+    outgoing_edges: ["Bar-Plan Finish", "Getränkebestellung Konzept"],
+  },
+  "Bar-Plan Finish": {
+    task: "Bar-Plan",
+    order_number: 6,
+    incoming_edges: ["Bar-Plan Konzept"],
+    outgoing_edges: ["Bar-Setup Konzept"],
   },
 
   "Getränkebestellung Konzept": {
     task: "Getränkebestellung",
-    order_number: 0,
-    incoming_edges: [],
-    outgoing_edges: [],
+    order_number: 3,
+    incoming_edges: ["Bar-Plan Konzept"],
+    outgoing_edges: ["Getränkebestellung Finish"],
   },
   "Getränkebestellung Finish": {
     task: "Getränkebestellung",
-    order_number: 1,
-    incoming_edges: [],
-    outgoing_edges: [],
+    order_number: 9,
+    incoming_edges: ["Getränkebestellung Konzept"],
+    outgoing_edges: ["Bar-Setup Konzept"],
   },
 
   "Bar-Setup Konzept": {
     task: "Bar-Setup",
-    order_number: 0,
-    incoming_edges: [],
-    outgoing_edges: [],
+    order_number: 11,
+    incoming_edges: ["Bar-Plan Finish", "Getränkebestellung Finish"],
+    outgoing_edges: ["Bar-Setup Finish"],
   },
   "Bar-Setup Finish": {
     task: "Bar-Setup",
-    order_number: 1,
-    incoming_edges: [],
-    outgoing_edges: [],
+    order_number: 16,
+    incoming_edges: ["Bar-Setup Konzept"],
+    outgoing_edges: ["Event-Setup Finish"],
   },
 
+  // UNTERHALTUNG MILESTONES
   "Rahmenprogramm planen Konzept": {
     task: "Rahmenprogramm planen",
-    order_number: 0,
-    incoming_edges: [],
-    outgoing_edges: [],
+    order_number: 4,
+    incoming_edges: ["Ideen finden Finish"],
+    outgoing_edges: ["Rahmenprogramm planen Finish"],
   },
   "Rahmenprogramm planen Finish": {
     task: "Rahmenprogramm planen",
-    order_number: 1,
-    incoming_edges: [],
-    outgoing_edges: [],
+    order_number: 12,
+    incoming_edges: ["Rahmenprogramm planen Konzept"],
+    outgoing_edges: ["Special Acts koordinieren Konzept"],
   },
 
   "Special Acts koordinieren Konzept": {
     task: "Special Acts koordinieren",
-    order_number: 0,
-    incoming_edges: [],
-    outgoing_edges: [],
+    order_number: 13,
+    incoming_edges: ["Rahmenprogramm planen Finish"],
+    outgoing_edges: ["Special Acts koordinieren Finish"],
   },
   "Special Acts koordinieren Finish": {
     task: "Special Acts koordinieren",
-    order_number: 1,
-    incoming_edges: [],
+    order_number: 20,
+    incoming_edges: ["Special Acts koordinieren Konzept"],
     outgoing_edges: [],
   },
 
@@ -308,142 +314,144 @@ const INITIAL_MILESTONES = {
     task: "Ideen finden",
     order_number: 0,
     incoming_edges: [],
-    outgoing_edges: [],
+    outgoing_edges: ["Ideen finden Finish"],
   },
   "Ideen finden Finish": {
     task: "Ideen finden",
-    order_number: 1,
-    incoming_edges: [],
-    outgoing_edges: [],
+    order_number: 3,
+    incoming_edges: ["Ideen finden Konzept"],
+    outgoing_edges: ["Rahmenprogramm planen Konzept", "Bier Pong Turnier Konzept"],
   },
 
   "Bier Pong Turnier Konzept": {
     task: "Bier Pong Turnier",
-    order_number: 0,
-    incoming_edges: [],
-    outgoing_edges: [],
+    order_number: 7,
+    incoming_edges: ["Ideen finden Finish"],
+    outgoing_edges: ["Bier Pong Turnier Finish"],
   },
   "Bier Pong Turnier Finish": {
     task: "Bier Pong Turnier",
-    order_number: 1,
-    incoming_edges: [],
+    order_number: 15,
+    incoming_edges: ["Bier Pong Turnier Konzept"],
     outgoing_edges: [],
   },
 
+  // MUSIK MILESTONES
   "Bühnen-Konzept Konzept": {
     task: "Bühnen-Konzept",
-    order_number: 0,
+    order_number: 2,
     incoming_edges: [],
-    outgoing_edges: [],
+    outgoing_edges: ["Bühnen-Konzept Finish"],
   },
   "Bühnen-Konzept Finish": {
     task: "Bühnen-Konzept",
-    order_number: 1,
-    incoming_edges: [],
-    outgoing_edges: [],
+    order_number: 7,
+    incoming_edges: ["Bühnen-Konzept Konzept"],
+    outgoing_edges: ["Timetable Konzept"],
   },
 
   "Musik-Konzept Konzept": {
     task: "Musik-Konzept",
-    order_number: 0,
+    order_number: 1,
     incoming_edges: [],
-    outgoing_edges: [],
+    outgoing_edges: ["Musik-Konzept Finish"],
   },
   "Musik-Konzept Finish": {
     task: "Musik-Konzept",
-    order_number: 1,
-    incoming_edges: [],
-    outgoing_edges: [],
+    order_number: 5,
+    incoming_edges: ["Musik-Konzept Konzept"],
+    outgoing_edges: ["Musiker suchen Konzept"],
   },
 
   "Musiker suchen Konzept": {
     task: "Musiker suchen",
-    order_number: 0,
-    incoming_edges: [],
-    outgoing_edges: [],
+    order_number: 6,
+    incoming_edges: ["Musik-Konzept Finish"],
+    outgoing_edges: ["Musiker suchen Finish"],
   },
   "Musiker suchen Finish": {
     task: "Musiker suchen",
-    order_number: 1,
-    incoming_edges: [],
-    outgoing_edges: [],
+    order_number: 11,
+    incoming_edges: ["Musiker suchen Konzept"],
+    outgoing_edges: ["Musiker anschreiben Konzept"],
   },
 
   "Musiker anschreiben Konzept": {
     task: "Musiker anschreiben",
-    order_number: 0,
-    incoming_edges: [],
-    outgoing_edges: [],
+    order_number: 12,
+    incoming_edges: ["Musiker suchen Finish"],
+    outgoing_edges: ["Musiker anschreiben Finish"],
   },
   "Musiker anschreiben Finish": {
     task: "Musiker anschreiben",
-    order_number: 1,
-    incoming_edges: [],
-    outgoing_edges: [],
+    order_number: 17,
+    incoming_edges: ["Musiker anschreiben Konzept"],
+    outgoing_edges: ["Timetable Konzept"],
   },
 
   "Timetable Konzept": {
     task: "Timetable",
-    order_number: 0,
-    incoming_edges: [],
-    outgoing_edges: [],
+    order_number: 18,
+    incoming_edges: ["Bühnen-Konzept Finish", "Musiker anschreiben Finish"],
+    outgoing_edges: ["Timetable Finish"],
   },
   "Timetable Finish": {
     task: "Timetable",
-    order_number: 1,
-    incoming_edges: [],
+    order_number: 24,
+    incoming_edges: ["Timetable Konzept"],
     outgoing_edges: [],
   },
 
+  // VORSTAND MILESTONES
   "VA-Konzept Konzept": {
     task: "VA-Konzept",
     order_number: 0,
     incoming_edges: [],
-    outgoing_edges: [],
+    outgoing_edges: ["VA-Konzept Finish", "Budget-Übersicht Konzept"],
   },
   "VA-Konzept Finish": {
     task: "VA-Konzept",
-    order_number: 1,
-    incoming_edges: [],
-    outgoing_edges: [],
+    order_number: 4,
+    incoming_edges: ["VA-Konzept Konzept"],
+    outgoing_edges: ["Aufbau-Plan Konzept", "Verischerung Konzept"],
   },
 
   "Budget-Übersicht Konzept": {
     task: "Budget-Übersicht",
-    order_number: 0,
-    incoming_edges: [],
-    outgoing_edges: [],
+    order_number: 2,
+    incoming_edges: ["VA-Konzept Konzept"],
+    outgoing_edges: ["Budget-Übersicht Finish"],
   },
   "Budget-Übersicht Finish": {
     task: "Budget-Übersicht",
-    order_number: 1,
-    incoming_edges: [],
+    order_number: 8,
+    incoming_edges: ["Budget-Übersicht Konzept"],
     outgoing_edges: [],
   },
 
   "Verischerung Konzept": {
     task: "Verischerung",
-    order_number: 0,
-    incoming_edges: [],
-    outgoing_edges: [],
+    order_number: 5,
+    incoming_edges: ["VA-Konzept Finish"],
+    outgoing_edges: ["Verischerung Finish"],
   },
   "Verischerung Finish": {
     task: "Verischerung",
-    order_number: 1,
-    incoming_edges: [],
-    outgoing_edges: [],
+    order_number: 10,
+    incoming_edges: ["Verischerung Konzept"],
+    outgoing_edges: ["Securities Konzept"],
   },
 
   "Securities Konzept": {
     task: "Securities",
-    order_number: 0,
-    incoming_edges: [],
-    outgoing_edges: [],
+    order_number: 12,
+    incoming_edges: ["Verischerung Finish"],
+    outgoing_edges: ["Securities Finish"],
   },
   "Securities Finish": {
     task: "Securities",
-    order_number: 1,
-    incoming_edges: [],
+    order_number: 19,
+    incoming_edges: ["Securities Konzept"],
     outgoing_edges: [],
   },
 };
@@ -551,6 +559,10 @@ console.log("adapted Milestones: ", adapted_Milestones)
 
 
 
+// Constants for connection handles
+const HANDLE_SIZE = 12
+const CONNECTION_RADIUS = 20
+
 export default function Merging(){
     const [teamOrder, setTeamOrder] = useState(INITAL_TEAM_ORDER)
     const [teams, setTeams] = useState(positioned_teams)
@@ -559,6 +571,13 @@ export default function Merging(){
     const [days, setDays] = useState({})
     const [rebuildLayout, setRebuildLayout] = useState(0)
     const [totalHeight, setTotalHeight] = useState(100)
+    
+    // Connection state
+    const [isDraggingConnection, setIsDraggingConnection] = useState(false)
+    const [connectionStart, setConnectionStart] = useState(null) // {milestone_key, handleType: 'source'|'target', x, y}
+    const [connectionEnd, setConnectionEnd] = useState({x: 0, y: 0})
+    const [selectedEdge, setSelectedEdge] = useState(null) // {source: milestone_key, target: milestone_key}
+    const containerRef = useRef(null)
 
 
 
@@ -571,6 +590,133 @@ export default function Merging(){
         const activeTasks = raw_tasks.filter(task => !tasks[task].collapsed)
         // console.log("Active Tasks", activeTasks)
         return activeTasks
+    }
+
+    // Get absolute position of a milestone's handle in the container
+    const getMilestoneHandlePosition = (milestone_key, handleType) => {
+        const milestone = milestones[milestone_key]
+        if (!milestone) return null
+        
+        const task = tasks[milestone.task]
+        if (!task || task.collapsed) return null
+        
+        const team = teams[task.team]
+        if (!team) return null
+        
+        // Calculate absolute position
+        const baseX = TEAM_WIDTH + TASK_WIDTH + milestone.position.x
+        const baseY = team.position.y + task.position.y
+        
+        // Handle positions (source on right, target on left)
+        const handleX = handleType === 'source' 
+            ? baseX + milestone.position.width - 4  // right side
+            : baseX + 4  // left side
+        const handleY = baseY + milestone.position.height / 2
+        
+        return { x: handleX, y: handleY }
+    }
+
+    // Handle connection drag start
+    const handleConnectionDragStart = (event, milestone_key, handleType) => {
+        event.stopPropagation()
+        event.preventDefault()
+        
+        const handlePos = getMilestoneHandlePosition(milestone_key, handleType)
+        if (!handlePos) return
+        
+        setIsDraggingConnection(true)
+        setConnectionStart({ milestone_key, handleType, ...handlePos })
+        setConnectionEnd(handlePos)
+        
+        const handleMouseMove = (e) => {
+            if (!containerRef.current) return
+            const rect = containerRef.current.getBoundingClientRect()
+            setConnectionEnd({
+                x: e.clientX - rect.left,
+                y: e.clientY - rect.top
+            })
+        }
+        
+        const handleMouseUp = (e) => {
+            if (!containerRef.current) return
+            const rect = containerRef.current.getBoundingClientRect()
+            const mouseX = e.clientX - rect.left
+            const mouseY = e.clientY - rect.top
+            
+            // Check if we're near any other milestone's handle
+            for (let key in milestones) {
+                if (key === milestone_key) continue
+                
+                const milestone = milestones[key]
+                const task = tasks[milestone.task]
+                if (task.collapsed) continue
+                
+                // Check both source and target handles
+                for (let targetHandleType of ['source', 'target']) {
+                    const handlePos = getMilestoneHandlePosition(key, targetHandleType)
+                    if (!handlePos) continue
+                    
+                    const distance = Math.sqrt(
+                        Math.pow(mouseX - handlePos.x, 2) + 
+                        Math.pow(mouseY - handlePos.y, 2)
+                    )
+                    
+                    if (distance < CONNECTION_RADIUS) {
+                        // Create connection
+                        createConnection(milestone_key, handleType, key, targetHandleType)
+                        break
+                    }
+                }
+            }
+            
+            setIsDraggingConnection(false)
+            setConnectionStart(null)
+            document.removeEventListener('mousemove', handleMouseMove)
+            document.removeEventListener('mouseup', handleMouseUp)
+        }
+        
+        document.addEventListener('mousemove', handleMouseMove)
+        document.addEventListener('mouseup', handleMouseUp)
+    }
+
+    // Create a connection between two milestones
+    const createConnection = (fromKey, fromHandle, toKey, toHandle) => {
+        audio.play();
+        // Determine source and target based on handle types
+        let sourceKey, targetKey
+        if (fromHandle === 'source') {
+            sourceKey = fromKey
+            targetKey = toKey
+        } else {
+            sourceKey = toKey
+            targetKey = fromKey
+        }
+        
+        // Check if connection already exists
+        if (milestones[sourceKey].outgoing_edges.includes(targetKey)) return
+        
+        setMilestones((prev) => ({
+            ...prev,
+            [sourceKey]: {
+                ...prev[sourceKey],
+                outgoing_edges: [...prev[sourceKey].outgoing_edges, targetKey]
+            },
+            [targetKey]: {
+                ...prev[targetKey],
+                incoming_edges: [...prev[targetKey].incoming_edges, sourceKey]
+            }
+        }))
+    }
+
+    // Generate SVG path for a connection (bezier curve)
+    const getConnectionPath = (startX, startY, endX, endY) => {
+        const controlPointOffset = Math.abs(endX - startX) * 0.5
+        return `M ${startX} ${startY} C ${startX + controlPointOffset} ${startY}, ${endX - controlPointOffset} ${endY}, ${endX} ${endY}`
+    }
+
+    // Generate straight line path for dragging
+    const getStraightPath = (startX, startY, endX, endY) => {
+        return `M ${startX} ${startY} L ${endX} ${endY}`
     }
 
     // Layout Grid
@@ -715,6 +861,7 @@ export default function Merging(){
         }
 
         const handleMouseUpMilestone = () => {
+            audio.play();
             const snappedX = Math.round(new_x / DAY_WIDTH) * DAY_WIDTH
             const new_index = snappedX / DAY_WIDTH
             console.log("SNAPPED: ", snappedX, new_index)
@@ -761,10 +908,87 @@ export default function Merging(){
                 color="error">
                 Demo
             </Button>
-          <div className="h-full w-full bg-white rounded relative">
+          <div className="h-full w-full bg-white rounded relative" ref={containerRef}>
 
-
-
+            {/* SVG Layer for Connections */}
+            <svg 
+              className="absolute top-0 left-0 w-full h-full pointer-events-none"
+              style={{ zIndex: 100 }}
+            >
+              <defs>
+                <style>
+                  {`
+                    @keyframes flowAnimation {
+                      from { stroke-dashoffset: 18; }
+                      to { stroke-dashoffset: 0; }
+                    }
+                  `}
+                </style>
+              </defs>
+              
+              {/* Render existing connections */}
+              {Object.entries(milestones).map(([milestone_key, milestone]) => {
+                return milestone.outgoing_edges.map((targetKey) => {
+                  const sourcePos = getMilestoneHandlePosition(milestone_key, 'source')
+                  const targetPos = getMilestoneHandlePosition(targetKey, 'target')
+                  
+                  if (!sourcePos || !targetPos) return null
+                  
+                  const isSelected = selectedEdge && 
+                    selectedEdge.source === milestone_key && 
+                    selectedEdge.target === targetKey
+                  
+                  return (
+                    <g key={`${milestone_key}-${targetKey}`}>
+                      {/* Invisible wider path for easier clicking */}
+                      <path
+                        d={getConnectionPath(sourcePos.x, sourcePos.y, targetPos.x, targetPos.y)}
+                        stroke="transparent"
+                        strokeWidth="15"
+                        fill="none"
+                        style={{ cursor: 'pointer', pointerEvents: 'auto' }}
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          setSelectedEdge({ source: milestone_key, target: targetKey })
+                        }}
+                      />
+                      {/* Visible path */}
+                      <path
+                        d={getConnectionPath(sourcePos.x, sourcePos.y, targetPos.x, targetPos.y)}
+                        stroke={isSelected ? "#ef4444" : "#010101"}
+                        strokeWidth={isSelected ? "4" : "3"}
+                        fill="none"
+                        strokeLinecap="round"
+                        strokeDasharray="12, 6"
+                        style={{
+                          animation: 'flowAnimation 1.5s linear infinite',
+                          pointerEvents: 'none'
+                        }}
+                      />
+                    </g>
+                  )
+                })
+              })}
+              
+              {/* Render dragging connection - straight line */}
+              {isDraggingConnection && connectionStart && (
+                <path
+                  d={getStraightPath(
+                    connectionStart.x, 
+                    connectionStart.y, 
+                    connectionEnd.x, 
+                    connectionEnd.y
+                  )}
+                  stroke="#6366f1"
+                  strokeWidth="2"
+                  strokeDasharray="5,5"
+                  fill="none"
+                  strokeLinecap="round"
+                  opacity="0.7"
+                  style={{ pointerEvents: 'none' }}
+                />
+              )}
+            </svg>
 
             {/* DAYS */}
             {Object.entries(days).map(([day, position])=>{
@@ -975,9 +1199,39 @@ export default function Merging(){
                                     >
                                         <div className="bg-white rounded h-full w-full 
                                         flex justify-center items-center font-bold border border-gray-400
-                                        
+                                        relative group
                                         ">
                                             {milestone.order_number}
+                                            
+                                            {/* Target Handle (Left) */}
+                                            <div
+                                              className="absolute w-3 h-3 bg-blue-500 rounded-full 
+                                                         opacity-0 group-hover:opacity-100 
+                                                         hover:scale-125 transition-all cursor-crosshair
+                                                         border-2 border-white shadow"
+                                              style={{
+                                                left: '-6px',
+                                                top: '50%',
+                                                transform: 'translateY(-50%)',
+                                                zIndex: 300,
+                                              }}
+                                              onMouseDown={(e) => handleConnectionDragStart(e, milestone_key, 'target')}
+                                            />
+                                            
+                                            {/* Source Handle (Right) */}
+                                            <div
+                                              className="absolute w-3 h-3 bg-green-500 rounded-full 
+                                                         opacity-0 group-hover:opacity-100 
+                                                         hover:scale-125 transition-all cursor-crosshair
+                                                         border-2 border-white shadow"
+                                              style={{
+                                                right: '-6px',
+                                                top: '50%',
+                                                transform: 'translateY(-50%)',
+                                                zIndex: 300,
+                                              }}
+                                              onMouseDown={(e) => handleConnectionDragStart(e, milestone_key, 'source')}
+                                            />
                                         </div>
                                       
                                     </div>
