@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react"
 import Button from "@mui/material/Button";
+import ZoomOutIcon from '@mui/icons-material/ZoomOut';
 
 
 const INITAL_TEAM_ORDER = ["Logistik", "Gatronomie", "Unterhaltung", "Vostand", "Musik"]
@@ -293,16 +294,26 @@ export default function Merging(){
         for (let task_key in tasks){
             console.log("TASK Name", task_key)
             const task = tasks[task_key]
-            // console.log("TASK", task)
-            const task_index_in_group = teams[task.team].tasks.indexOf(task_key)
+            
+            console.log("TASK HEREEEEEEEEEEE", task.collapsed)
+            
+            const visibleTasks = getDisplayedTeamTasks(task.team)
+
+            const task_index_in_group = visibleTasks.indexOf(task_key)
+
             console.log("CURRENT INDEX: ", task_index_in_group)
+
+
+            let height = TASK_HEIGHT * task_index_in_group
+
+            if (task.collapsed) {height = 0}
 
             newly_postioned_tasks[task_key] = {
                 ...tasks[task_key],
                 position: {
                     ...tasks[task_key].position,
                     x: 0,
-                    y: TASK_HEIGHT * task_index_in_group
+                    y: height
                 }
             }
         }
@@ -368,6 +379,7 @@ export default function Merging(){
                         }}
                         >   
                              {team_key}
+                        
                         </div>
 
 
@@ -389,7 +401,7 @@ export default function Merging(){
                                     // PARENT TASK CONTAINER
                                     <div 
                                     key={`${task_key}_container`}
-                                    className="bg-blue-200 border-t absolute"
+                                    className=" border-t absolute"
                                     style={{
                                         width: `${task.position.width}px`,
                                         top: `${task.position.y}px`
@@ -402,7 +414,7 @@ export default function Merging(){
 
                                         {/* Task Name */}
                                         <div
-                                        className="bg-white border-r"
+                                        className="bg-white border-r relative"
                                         style={{
                                             display: tasks[task_key].collapsed ? "none" : "block",
                                             height: `${TASK_HEIGHT}px`,
@@ -412,11 +424,37 @@ export default function Merging(){
                                         >
                                         
                                             {task_key}
+                                         
+                                                 <ZoomOutIcon
+                                                 className="absolute top-1 right-1 text-sm! hover:text-blue-200!"
+                                                 onClick={()=>{
+                                                    setTasks((prev)=>{
+                                                        return ({
+                                                            ...prev,
+                                                            [task_key]: {
+                                                                ...prev[task_key],
+                                                                collapsed: true
+                                                            }
+                                                        })
+                                                    })
+                                                setRebuildLayout(true)
+                                                 }}
+                                                 />
                                         </div>
 
 
                                         {/* Milestones */}
-                                        <div className="w-full h-full bg-yellow-200">
+                                        <div 
+                                        className="w-full bg-yellow-200 absolute border"
+                                        style={{
+                                            top: "0",
+                                            left: `${TASK_WIDTH}px`,
+                                            width: `${task.position.width - TASK_WIDTH}px`,
+                                            height: `${TASK_HEIGHT}px`,
+                                    
+                                        }}
+                                        
+                                        >
 
                                         </div>
                                     </div>
