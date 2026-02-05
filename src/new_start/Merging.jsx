@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import Button from "@mui/material/Button";
 import ZoomOutIcon from '@mui/icons-material/ZoomOut';
+import { width } from "@mui/system";
 
 
 const INITAL_TEAM_ORDER = ["Logistik", "Gatronomie", "Unterhaltung", "Vostand", "Musik"]
@@ -501,6 +502,7 @@ export default function Merging(){
     const [milestones, setMilestones] = useState(adapted_Milestones)
     const [days, setDays] = useState({})
     const [rebuildLayout, setRebuildLayout] = useState(0)
+    const [totalHeight, setTotalHeight] = useState(100)
 
 
 
@@ -539,7 +541,8 @@ export default function Merging(){
         }
         // console.log("NEWLY POSITIONED TEAMS: ", newly_positioned_teams)
         setTeams(newly_positioned_teams)
-
+        setTotalHeight(accumalted_height)
+        console.log("ACUMALTED HEIGHT", accumalted_height)
         
 
         const newly_postioned_tasks = {}
@@ -599,26 +602,47 @@ export default function Merging(){
 
 
 
+        const positioned_days = {}
+        for (let i = 0; i < NUM_DAYS; i++ ){
+            positioned_days[i] = {
+                x: DAY_WIDTH * i + TEAM_WIDTH + TASK_WIDTH, 
+                y: 0, 
+                height: accumalted_height,
+                width: DAY_WIDTH,
+                
+            }
+        }
+        console.log("POsitioned days: ", positioned_days)
+        setDays(positioned_days)
+
+
+
+
+
         setRebuildLayout(false)
     },[rebuildLayout])
 
 
 
     const handleMilestoneDrag = (event, milestone_key) => {
+        event.stopPropagation()
         const startX = event.clientX - milestones[milestone_key].position.x
         const startY = event.clientY - milestones[milestone_key].position.y
         console.log("STARTX, STARTY: ", startX, startY)
-
+        let new_x = startX
 
         const handleMouseMoveMilestone = (event) => {
-            let new_x = event.clientX - startX
+            new_x = event.clientX - startX
             const new_y = event.clientY - startY
 
 
             if (new_x < 0) {
                 new_x = 0
             }
-
+            if (new_x + milestones[milestone_key].position.width > TASK_ROW_WIDTH - TASK_WIDTH) {
+                new_x = TASK_ROW_WIDTH - TASK_WIDTH - milestones[milestone_key].position.width
+            }
+            
             console.log("New X and New Y: ", new_x, new_y)
             setMilestones((prev)=>{
                 return ({
@@ -635,6 +659,26 @@ export default function Merging(){
         }
 
         const handleMouseUpMilestone = () => {
+            const snappedX = Math.round(new_x / DAY_WIDTH) * DAY_WIDTH
+            const new_index = snappedX / DAY_WIDTH
+            console.log("SNAPPED: ", snappedX, new_index)
+            setMilestones((prev)=>{
+                return ({
+                    ...prev, 
+                    [milestone_key]: {
+                        ...prev[milestone_key], 
+                        order_number: new_index,
+                        position: {
+                            ...prev[milestone_key].position,
+                            x: snappedX
+                        }
+                    }
+                })
+            })
+
+
+
+
             document.removeEventListener("mousemove", handleMouseMoveMilestone)
             document.removeEventListener("mouseup", handleMouseUpMilestone)
         }
@@ -654,7 +698,7 @@ export default function Merging(){
 
     return (
       <>
-        <div className="h-screen p-10 bg-gray-500">
+        <div className="h-2000 p-10 bg-gray-500">
             <Button 
                 onClick={()=>{setRebuildLayout(true)}}
                 variant="contained" 
@@ -662,6 +706,43 @@ export default function Merging(){
                 Demo
             </Button>
           <div className="h-full w-full bg-white rounded relative">
+
+
+
+
+            {/* DAYS */}
+            {Object.entries(days).map(([day, position])=>{
+
+                // FOR SOME REASON THE POSITION IS CORRECT; DONT ASK ME WHYX
+                // console.log("THE DAYS", position)
+                return (
+                    <div
+                    className="absolute border pointer-events-none"
+                    style={{
+                        top: `${position.y}px`,
+                        left: `${position.x}px`,
+                        width: `${position.width}px`,
+                        height: `${position.height}px`,
+                        zIndex: 500,
+         
+
+                    }}
+                    key={`day_${day}`}
+                    >
+                       
+                    </div>
+                )
+            })}
+
+
+
+
+
+
+
+
+
+            {/* TEAMS -> TASKS -> MILESTONES CONTAINER */}
             {Object.entries(teams).map(([team_key, team_data]) => {
                 return (
                   <div
@@ -714,7 +795,7 @@ export default function Merging(){
                       <div
                         className="bg-blue-200  absolute"
                         style={{
-                          width: `${TASK_ROW_WIDTH}px`,
+                          width: `${FULL_ROW_WIDTH}px`,
                           left: `${TEAM_WIDTH}px`,
                           // paddingLeft: `${TEAM_WIDTH}px`ssdf
                         }}
@@ -770,7 +851,7 @@ export default function Merging(){
                                 style={{
                                   top: "0",
                                   left: `${TASK_WIDTH}px`,
-                                  width: `${task.position.width - TASK_WIDTH}px`,
+                                  width: `${MILESTONE_ROW_WIDTH}px`,
                                   height: `${TASK_HEIGHT}px`,
                                 }}
                               >
@@ -796,7 +877,7 @@ export default function Merging(){
                                       }}
                                       key={`${milestone}_${milestone.order_number}`}
                                     >
-                                      X
+                                      {milestone.order_number}
                                     </div>
                                   );
                                 })}
@@ -809,6 +890,7 @@ export default function Merging(){
                   </div>
                 );})}
           </div>
+          
         </div>
       </>
     );
