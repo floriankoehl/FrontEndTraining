@@ -1,21 +1,22 @@
 import { useEffect, useRef, useState } from "react"
 
-import DragItem from "./DragItem"
-import ParentItem from "./ParentItem"
-import DragSimple from "./DragSimple"
-// import Sorted_list from "./Sorted_list"
-import OrderList from "./OrderList"
-import Arrow from "./Arrow"
-import NodeConnectionDemo from "./NodeConnectionDemo"
-import New from "./New"
-import Objects from "./Objects"
-import MyClass from "./MyClass"
-import Resize from "./Resize"
-import MyArrows from "./MyArrows"
-import SVG from "./SVG"
-import Connect from "./sophisticated/Connect"
-import Prototype from "./new_start/simplest_reorder"
-import ListOrder from "./new_start/ListOrder"
+// import DragItem from "./DragItem"
+// import ParentItem from "./ParentItem"
+// import DragSimple from "./DragSimple"
+// // import Sorted_list from "./Sorted_list"
+// import OrderList from "./OrderList"
+// import Arrow from "./Arrow"
+// import NodeConnectionDemo from "./NodeConnectionDemo"
+// import New from "./New"
+// import Objects from "./Objects"
+// import MyClass from "./MyClass"
+// import Resize from "./Resize"
+// import MyArrows from "./MyArrows"
+// import SVG from "./SVG"
+// import Connect from "./sophisticated/Connect"
+// import Prototype from "./new_start/simplest_reorder"
+// import ListOrder from "./new_start/ListOrder"
+import Merging from "./new_start/Merging"
 
 
 export default function App(){
@@ -73,7 +74,8 @@ export default function App(){
           {/* <MyArrows/> */}
           {/* <Connect/> */}
           {/* <Prototype/> */}
-          <ListOrder/>
+          {/* <ListOrder/> */}
+          <Merging/>
           {/* <SVG/> */}
           {/* <MyClass/> */}
           

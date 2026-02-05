@@ -30,7 +30,7 @@ const INITIAL_GROUPS = {
   ],
   },
 
-};
+  };
 
 const GROUPWIDTH = 400;
 const GROUPHEIGHT = 50;
@@ -117,8 +117,6 @@ export default function ListOrder() {
     setGroupOrder(copy_order_groups);
   };
 
-
-
    const swapIndeces = (list, from_index, to_index) => {
         const swappedList = [...list]
 
@@ -127,7 +125,6 @@ export default function ListOrder() {
 
         return swappedList
   }
-
 
   const putTaskonTop = (group, index) => {
     const group_tasks = groups[group].tasks
