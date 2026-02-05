@@ -151,8 +151,254 @@ const INITIAL_TASKS = {
 };
 
 
+const INITIAL_MILESTONES = {
+  "Aufbau-Plan Konzept": {
+    task: "Aufbau-Plan",
+    order_number: 0,
+    incoming_edges: [],
+    outgoing_edges: [],
+  },
+  "Aufbau-Plan Finish": {
+    task: "Aufbau-Plan",
+    order_number: 1,
+    incoming_edges: [],
+    outgoing_edges: [],
+  },
 
+  "Abbau-Plan Konzept": {
+    task: "Abbau-Plan",
+    order_number: 0,
+    incoming_edges: [],
+    outgoing_edges: [],
+  },
+  "Abbau-Plan Finish": {
+    task: "Abbau-Plan",
+    order_number: 1,
+    incoming_edges: [],
+    outgoing_edges: [],
+  },
 
+  "Event-Setup Konzept": {
+    task: "Event-Setup",
+    order_number: 0,
+    incoming_edges: [],
+    outgoing_edges: [],
+  },
+  "Event-Setup Finish": {
+    task: "Event-Setup",
+    order_number: 1,
+    incoming_edges: [],
+    outgoing_edges: [],
+  },
+
+  "Bar-Plan Konzept": {
+    task: "Bar-Plan",
+    order_number: 0,
+    incoming_edges: [],
+    outgoing_edges: [],
+  },
+  "Bar-Plan Finish": {
+    task: "Bar-Plan",
+    order_number: 1,
+    incoming_edges: [],
+    outgoing_edges: [],
+  },
+
+  "Getränkebestellung Konzept": {
+    task: "Getränkebestellung",
+    order_number: 0,
+    incoming_edges: [],
+    outgoing_edges: [],
+  },
+  "Getränkebestellung Finish": {
+    task: "Getränkebestellung",
+    order_number: 1,
+    incoming_edges: [],
+    outgoing_edges: [],
+  },
+
+  "Bar-Setup Konzept": {
+    task: "Bar-Setup",
+    order_number: 0,
+    incoming_edges: [],
+    outgoing_edges: [],
+  },
+  "Bar-Setup Finish": {
+    task: "Bar-Setup",
+    order_number: 1,
+    incoming_edges: [],
+    outgoing_edges: [],
+  },
+
+  "Rahmenprogramm planen Konzept": {
+    task: "Rahmenprogramm planen",
+    order_number: 0,
+    incoming_edges: [],
+    outgoing_edges: [],
+  },
+  "Rahmenprogramm planen Finish": {
+    task: "Rahmenprogramm planen",
+    order_number: 1,
+    incoming_edges: [],
+    outgoing_edges: [],
+  },
+
+  "Special Acts koordinieren Konzept": {
+    task: "Special Acts koordinieren",
+    order_number: 0,
+    incoming_edges: [],
+    outgoing_edges: [],
+  },
+  "Special Acts koordinieren Finish": {
+    task: "Special Acts koordinieren",
+    order_number: 1,
+    incoming_edges: [],
+    outgoing_edges: [],
+  },
+
+  "Ideen finden Konzept": {
+    task: "Ideen finden",
+    order_number: 0,
+    incoming_edges: [],
+    outgoing_edges: [],
+  },
+  "Ideen finden Finish": {
+    task: "Ideen finden",
+    order_number: 1,
+    incoming_edges: [],
+    outgoing_edges: [],
+  },
+
+  "Bier Pong Turnier Konzept": {
+    task: "Bier Pong Turnier",
+    order_number: 0,
+    incoming_edges: [],
+    outgoing_edges: [],
+  },
+  "Bier Pong Turnier Finish": {
+    task: "Bier Pong Turnier",
+    order_number: 1,
+    incoming_edges: [],
+    outgoing_edges: [],
+  },
+
+  "Bühnen-Konzept Konzept": {
+    task: "Bühnen-Konzept",
+    order_number: 0,
+    incoming_edges: [],
+    outgoing_edges: [],
+  },
+  "Bühnen-Konzept Finish": {
+    task: "Bühnen-Konzept",
+    order_number: 1,
+    incoming_edges: [],
+    outgoing_edges: [],
+  },
+
+  "Musik-Konzept Konzept": {
+    task: "Musik-Konzept",
+    order_number: 0,
+    incoming_edges: [],
+    outgoing_edges: [],
+  },
+  "Musik-Konzept Finish": {
+    task: "Musik-Konzept",
+    order_number: 1,
+    incoming_edges: [],
+    outgoing_edges: [],
+  },
+
+  "Musiker suchen Konzept": {
+    task: "Musiker suchen",
+    order_number: 0,
+    incoming_edges: [],
+    outgoing_edges: [],
+  },
+  "Musiker suchen Finish": {
+    task: "Musiker suchen",
+    order_number: 1,
+    incoming_edges: [],
+    outgoing_edges: [],
+  },
+
+  "Musiker anschreiben Konzept": {
+    task: "Musiker anschreiben",
+    order_number: 0,
+    incoming_edges: [],
+    outgoing_edges: [],
+  },
+  "Musiker anschreiben Finish": {
+    task: "Musiker anschreiben",
+    order_number: 1,
+    incoming_edges: [],
+    outgoing_edges: [],
+  },
+
+  "Timetable Konzept": {
+    task: "Timetable",
+    order_number: 0,
+    incoming_edges: [],
+    outgoing_edges: [],
+  },
+  "Timetable Finish": {
+    task: "Timetable",
+    order_number: 1,
+    incoming_edges: [],
+    outgoing_edges: [],
+  },
+
+  "VA-Konzept Konzept": {
+    task: "VA-Konzept",
+    order_number: 0,
+    incoming_edges: [],
+    outgoing_edges: [],
+  },
+  "VA-Konzept Finish": {
+    task: "VA-Konzept",
+    order_number: 1,
+    incoming_edges: [],
+    outgoing_edges: [],
+  },
+
+  "Budget-Übersicht Konzept": {
+    task: "Budget-Übersicht",
+    order_number: 0,
+    incoming_edges: [],
+    outgoing_edges: [],
+  },
+  "Budget-Übersicht Finish": {
+    task: "Budget-Übersicht",
+    order_number: 1,
+    incoming_edges: [],
+    outgoing_edges: [],
+  },
+
+  "Verischerung Konzept": {
+    task: "Verischerung",
+    order_number: 0,
+    incoming_edges: [],
+    outgoing_edges: [],
+  },
+  "Verischerung Finish": {
+    task: "Verischerung",
+    order_number: 1,
+    incoming_edges: [],
+    outgoing_edges: [],
+  },
+
+  "Securities Konzept": {
+    task: "Securities",
+    order_number: 0,
+    incoming_edges: [],
+    outgoing_edges: [],
+  },
+  "Securities Finish": {
+    task: "Securities",
+    order_number: 1,
+    incoming_edges: [],
+    outgoing_edges: [],
+  },
+};
 
 
 
@@ -222,8 +468,23 @@ console.log("Positioned TASKS: ", positioned_Tasks)
 
 
 
-
-
+// Add position to Milestone
+const adapted_Milestones = {}
+for (let key in INITIAL_MILESTONES){
+    // console.log("The key", key)
+    const milestone = INITIAL_MILESTONES[key]
+    // console.log("The milestone", milestone)
+    adapted_Milestones[key] = {
+        ...milestone,
+        position: {
+            x: 0, 
+            y: 0, 
+            height: TASK_HEIGHT, 
+            width: DAY_WIDTH
+        }
+    }
+}
+console.log("adapted Milestones: ", adapted_Milestones)
 
 
 
@@ -237,7 +498,7 @@ export default function Merging(){
     const [teamOrder, setTeamOrder] = useState(INITAL_TEAM_ORDER)
     const [teams, setTeams] = useState(positioned_teams)
     const [tasks, setTasks] = useState(positioned_Tasks)
-    const [milestones, setMilestones] = useState({})
+    const [milestones, setMilestones] = useState(adapted_Milestones)
     const [days, setDays] = useState({})
     const [rebuildLayout, setRebuildLayout] = useState(0)
 
@@ -254,16 +515,8 @@ export default function Merging(){
         return activeTasks
     }
 
-
-
-
-
-    
-    // Layout Teams
+    // Layout Grid
     useEffect(()=>{
-        
-
-
         // REBUILD TEAMS
         const newly_positioned_teams = {}
         let accumalted_height = 0
@@ -284,24 +537,24 @@ export default function Merging(){
             }
             accumalted_height += height_added
         }
-        console.log("NEWLY POSITIONED TEAMS: ", newly_positioned_teams)
+        // console.log("NEWLY POSITIONED TEAMS: ", newly_positioned_teams)
         setTeams(newly_positioned_teams)
 
         
 
         const newly_postioned_tasks = {}
-        console.log("UPDATING POSITION ACCORDINGLY")
+        // console.log("UPDATING POSITION ACCORDINGLY")
         for (let task_key in tasks){
-            console.log("TASK Name", task_key)
+            // console.log("TASK Name", task_key)
             const task = tasks[task_key]
             
-            console.log("TASK HEREEEEEEEEEEE", task.collapsed)
+            // console.log("TASK HEREEEEEEEEEEE", task.collapsed)
             
             const visibleTasks = getDisplayedTeamTasks(task.team)
 
             const task_index_in_group = visibleTasks.indexOf(task_key)
 
-            console.log("CURRENT INDEX: ", task_index_in_group)
+            // console.log("CURRENT INDEX: ", task_index_in_group)
 
 
             let height = TASK_HEIGHT * task_index_in_group
@@ -322,7 +575,21 @@ export default function Merging(){
 
 
 
-
+        const newly_positioned_milestones = {}
+        for (let milestone_key in milestones) {
+            // console.log("Milestone key: ", milestone_key)
+            const milestone = milestones[milestone_key]
+            // console.log("Milestone: ", milestone)
+            newly_positioned_milestones[milestone_key] = {
+                ...milestone, 
+                position: {
+                    ...milestone.position,
+                    x: DAY_WIDTH * milestone.order_number 
+                }
+            }
+        }
+        console.log("NEWLY Positoned Milestones", newly_positioned_milestones)
+        setMilestones(newly_positioned_milestones)
 
 
 
@@ -334,6 +601,51 @@ export default function Merging(){
 
         setRebuildLayout(false)
     },[rebuildLayout])
+
+
+
+    const handleMilestoneDrag = (event, milestone_key) => {
+        const startX = event.clientX - milestones[milestone_key].position.x
+        const startY = event.clientY - milestones[milestone_key].position.y
+        console.log("STARTX, STARTY: ", startX, startY)
+
+
+        const handleMouseMoveMilestone = (event) => {
+            let new_x = event.clientX - startX
+            const new_y = event.clientY - startY
+
+
+            if (new_x < 0) {
+                new_x = 0
+            }
+
+            console.log("New X and New Y: ", new_x, new_y)
+            setMilestones((prev)=>{
+                return ({
+                    ...prev, 
+                    [milestone_key]: {
+                        ...prev[milestone_key], 
+                        position: {
+                            ...prev[milestone_key].position,
+                            x: new_x
+                        }
+                    }
+                })
+            })
+        }
+
+        const handleMouseUpMilestone = () => {
+            document.removeEventListener("mousemove", handleMouseMoveMilestone)
+            document.removeEventListener("mouseup", handleMouseUpMilestone)
+        }
+
+
+        document.addEventListener("mousemove", handleMouseMoveMilestone)
+        document.addEventListener("mouseup", handleMouseUpMilestone)
+    }
+
+
+
 
 
 
@@ -352,120 +664,150 @@ export default function Merging(){
           <div className="h-full w-full bg-white rounded relative">
             {Object.entries(teams).map(([team_key, team_data]) => {
                 return (
-                    <div 
-                    className="absolute border"
+                  <div
+                    className="absolute border-t"
                     style={{
-                        backgroundColor: "#6aeaae",
-                        top: `${team_data.position.y}px`,
-                        left: `${team_data.position.x}px`,
-                        height: `${team_data.position.height}px`,
-                        width: `${team_data.position.width}px`,
+                      backgroundColor: "#6aeaae",
+                      top: `${team_data.position.y}px`,
+                      left: `${team_data.position.x}px`,
+                      height: `${team_data.position.height}px`,
+                      width: `${team_data.position.width}px`,
                     }}
                     key={team_key}
-                    >
-
-
-
-
-
-
+                  >
                     {/* CONTENT */}
                     <div className="flex justify-between h-full">
-                        {/* Team Name */}
-                        <div
-                        className="bg-red-200 relative "
+                      {/* Team Name */}
+                      <div
+                        className="bg-red-200 relative flex flex-col"
                         style={{
-                            width:`${FULL_ROW_WIDTH}px`
+                          width: `${FULL_ROW_WIDTH}px`,
                         }}
-                        >   
-                             {team_key}
-                        
-                        </div>
+                      >
+                        {team_key}
+                        <Button
+                          className="h-5 w-10 text-xs!"
+                          onClick={() => {
+                            setTasks((prev) => {
+                              const updatedTasks = { ...prev };
 
+                              teams[team_key].tasks.forEach((task_key) => {
+                                updatedTasks[task_key] = {
+                                  ...updatedTasks[task_key],
+                                  collapsed: false,
+                                };
+                              });
 
-                        {/* Tasks */}
-                        <div
-                        className="bg-blue-200 border-t absolute"
-                        style={{
-                            width: `${TASK_ROW_WIDTH}px`,
-                            left: `${TEAM_WIDTH}px`
-                            // paddingLeft: `${TEAM_WIDTH}px`ssdf
-                        }}
-                                    
+                              return updatedTasks;
+                            });
+
+                            setRebuildLayout(true);
+                          }}
+                          variant="contained"
+                          color="error"
                         >
-                            {team_data.tasks.map((task_key)=>{
-                                const task = tasks[task_key]
+                          All
+                        </Button>
+                      </div>
 
-                                return (
-                                    
-                                    // PARENT TASK CONTAINER
-                                    <div 
-                                    key={`${task_key}_container`}
-                                    className=" border-t absolute"
-                                    style={{
-                                        width: `${task.position.width}px`,
-                                        top: `${task.position.y}px`
-                                        // paddingLeft: `${TEAM_WIDTH}px`ssdf
-                                    }}
-                                    
+                      {/* Tasks */}
+                      <div
+                        className="bg-blue-200  absolute"
+                        style={{
+                          width: `${TASK_ROW_WIDTH}px`,
+                          left: `${TEAM_WIDTH}px`,
+                          // paddingLeft: `${TEAM_WIDTH}px`ssdf
+                        }}
+                      >
+                        {team_data.tasks.map((task_key) => {
+                          const task = tasks[task_key];
+
+                          return (
+                            // PARENT TASK CONTAINER
+                            <div
+                              key={`${task_key}_container`}
+                              className=" border-t absolute"
+                              style={{
+                                width: `${task.position.width}px`,
+                                top: `${task.position.y}px`,
+                                // paddingLeft: `${TEAM_WIDTH}px`ssdf
+                              }}
+                            >
+                              {/* Task Name */}
+                              <div
+                                className="bg-white border-r relative"
+                                style={{
+                                  display: tasks[task_key].collapsed
+                                    ? "none"
+                                    : "block",
+                                  height: `${TASK_HEIGHT}px`,
+                                  width: `${TASK_WIDTH}px`,
+                                }}
+                                key={task_key}
+                              >
+                                {task_key}
+
+                                <ZoomOutIcon
+                                  className="absolute top-1 right-1 text-sm! hover:text-blue-200!"
+                                  onClick={() => {
+                                    setTasks((prev) => {
+                                      return {
+                                        ...prev,
+                                        [task_key]: {
+                                          ...prev[task_key],
+                                          collapsed: true,
+                                        },
+                                      };
+                                    });
+                                    setRebuildLayout(true);
+                                  }}
+                                />
+                              </div>
+
+                              {/* Milestones */}
+                              <div
+                                className="w-full bg-yellow-200 absolute border select-none"
+                                style={{
+                                  top: "0",
+                                  left: `${TASK_WIDTH}px`,
+                                  width: `${task.position.width - TASK_WIDTH}px`,
+                                  height: `${TASK_HEIGHT}px`,
+                                }}
+                              >
+                                {task.milestones.map((milestone_key) => {
+                                  // console.log("milestone here", milestone_key)
+                                  const milestone = milestones[milestone_key];
+                                  return (
+                                    <div
+                                      onMouseDown={(event) => {
+                                        handleMilestoneDrag(
+                                          event,
+                                          milestone_key,
+                                        );
+                                      }}
+                                      className="bg-purple-200 border absolute select-none"
+                                      style={{
+                                        top: `0`,
+                                        left: `${milestone.position.x}px`,
+
+                                        height: `${milestone.position.height}px`,
+                                        width: `${milestone.position.width}px`,
+                                        zIndex: 200,
+                                      }}
+                                      key={`${milestone}_${milestone.order_number}`}
                                     >
-
-
-
-                                        {/* Task Name */}
-                                        <div
-                                        className="bg-white border-r relative"
-                                        style={{
-                                            display: tasks[task_key].collapsed ? "none" : "block",
-                                            height: `${TASK_HEIGHT}px`,
-                                            width: `${TASK_WIDTH}px`
-                                        }}
-                                        key={task_key}
-                                        >
-                                        
-                                            {task_key}
-                                         
-                                                 <ZoomOutIcon
-                                                 className="absolute top-1 right-1 text-sm! hover:text-blue-200!"
-                                                 onClick={()=>{
-                                                    setTasks((prev)=>{
-                                                        return ({
-                                                            ...prev,
-                                                            [task_key]: {
-                                                                ...prev[task_key],
-                                                                collapsed: true
-                                                            }
-                                                        })
-                                                    })
-                                                setRebuildLayout(true)
-                                                 }}
-                                                 />
-                                        </div>
-
-
-                                        {/* Milestones */}
-                                        <div 
-                                        className="w-full bg-yellow-200 absolute border"
-                                        style={{
-                                            top: "0",
-                                            left: `${TASK_WIDTH}px`,
-                                            width: `${task.position.width - TASK_WIDTH}px`,
-                                            height: `${TASK_HEIGHT}px`,
-                                    
-                                        }}
-                                        
-                                        >
-
-                                        </div>
+                                      X
                                     </div>
-                                )
-                            })}
-                        </div>
-                    </div>  
-                   
-                        
+                                  );
+                                })}
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
                     </div>
-                )})}
+                  </div>
+                );})}
           </div>
         </div>
       </>
