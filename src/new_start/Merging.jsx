@@ -1,51 +1,98 @@
 import { useEffect, useState } from "react"
 import Button from "@mui/material/Button";
 import ZoomOutIcon from '@mui/icons-material/ZoomOut';
+import GradeIcon from '@mui/icons-material/Grade';
 import { width } from "@mui/system";
 
 
 const INITAL_TEAM_ORDER = ["Logistik", "Gatronomie", "Unterhaltung", "Vostand", "Musik"]
 
+// const INITIAL_TEAMS = {
+//     "Logistik": {
+//         "tasks": [
+//             "Aufbau-Plan",
+//             "Abbau-Plan",
+//             "Event-Setup"
+//         ]
+//     },
+//     "Gatronomie": {
+//         "tasks": [
+//             "Bar-Plan",
+//             "Getränkebestellung",
+//             "Bar-Setup"
+//         ]
+//     }, 
+//     "Unterhaltung": {
+//         "tasks": [
+//             "Rahmenprogramm planen",
+//             "Special Acts koordinieren",
+//             "Ideen finden",
+//             "Bier Pong Turnier"
+//         ]
+//     }, 
+//     "Musik": {
+//         "tasks": [
+//             "Bühnen-Konzept",
+//             "Musik-Konzept",
+//             "Musiker suchen",
+//             "Musiker anschreiben",
+//             "Timetable"
+//         ]
+//     }, 
+//     "Vostand": {
+//         "tasks": [
+//             "VA-Konzept",
+//             "Budget-Übersicht",
+//             "Verischerung",
+//             "Securities"
+//         ]
+//     },
+// }
 const INITIAL_TEAMS = {
-    "Logistik": {
-        "tasks": [
-            "Aufbau-Plan",
-            "Abbau-Plan",
-            "Event-Setup"
-        ]
-    },
-    "Gatronomie": {
-        "tasks": [
-            "Bar-Plan",
-            "Getränkebestellung",
-            "Bar-Setup"
-        ]
-    }, 
-    "Unterhaltung": {
-        "tasks": [
-            "Rahmenprogramm planen",
-            "Special Acts koordinieren",
-            "Ideen finden",
-            "Bier Pong Turnier"
-        ]
-    }, 
-    "Musik": {
-        "tasks": [
-            "Bühnen-Konzept",
-            "Musik-Konzept",
-            "Musiker suchen",
-            "Musiker anschreiben",
-            "Timetable"
-        ]
-    }, 
-    "Vostand": {
-        "tasks": [
-            "VA-Konzept",
-            "Budget-Übersicht",
-            "Verischerung",
-            "Securities"
-        ]
-    },
+  "Logistik": {
+    color: "#3B82F6", // soft blue
+    tasks: [
+      "Aufbau-Plan",
+      "Abbau-Plan",
+      "Event-Setup"
+    ]
+  },
+  "Gatronomie": {
+    color: "#F59E0B", // warm amber
+    tasks: [
+      "Bar-Plan",
+      "Getränkebestellung",
+      "Bar-Setup"
+    ]
+  },
+  "Unterhaltung": {
+    color: "#8B5CF6", // muted violet
+    tasks: [
+      "Rahmenprogramm planen",
+      "Special Acts koordinieren",
+      "Ideen finden",
+      "Bier Pong Turnier"
+    ]
+  },
+  "Musik": {
+    color: "#10B981", // modern emerald
+    tasks: [
+      "Bühnen-Konzept",
+      "Musik-Konzept",
+      "Musiker suchen",
+      "Musiker anschreiben",
+      "Timetable"
+    ]
+  },
+  "Vostand": {
+    color: "#EF4444", // clean soft red (not aggressive)
+    tasks: [
+      "VA-Konzept",
+      "Budget-Übersicht",
+      "Verischerung",
+      "Securities"
+    ]
+  },
 }
 
 
@@ -421,11 +468,20 @@ const TEAM_WIDTH = 100
 const TASK_WIDTH = 200
 const TASK_HEIGHT = 50
 const DAY_WIDTH = 50
-const NUM_DAYS = 10
+const NUM_DAYS = 30
 
 const MILESTONE_ROW_WIDTH = DAY_WIDTH * NUM_DAYS
 const TASK_ROW_WIDTH = TASK_WIDTH + MILESTONE_ROW_WIDTH
 const FULL_ROW_WIDTH = TASK_ROW_WIDTH + TEAM_WIDTH
+
+
+const MARGIN_TEAM = 20
+
+
+
+
+
+
 
 
 
@@ -526,13 +582,13 @@ export default function Merging(){
             const team_key = teamOrder[team_index]
             const team = teams[team_key]
             const active_tasks = getDisplayedTeamTasks(team_key).length
-            const height_added = TASK_HEIGHT * active_tasks
+            const height_added = TASK_HEIGHT * active_tasks + MARGIN_TEAM
             
             newly_positioned_teams[team_key] = {
                 ...team,
                 position: {
                     x: team.position.x,
-                    y: accumalted_height,
+                    y: accumalted_height ,
                     width: FULL_ROW_WIDTH, 
                     height: height_added
                 }
@@ -560,7 +616,7 @@ export default function Merging(){
             // console.log("CURRENT INDEX: ", task_index_in_group)
 
 
-            let height = TASK_HEIGHT * task_index_in_group
+            let height = TASK_HEIGHT * task_index_in_group + MARGIN_TEAM /2
 
             if (task.collapsed) {height = 0}
 
@@ -760,9 +816,10 @@ export default function Merging(){
                     <div className="flex justify-between h-full">
                       {/* Team Name */}
                       <div
-                        className="bg-red-200 relative flex flex-col"
+                        className=" relative flex flex-col"
                         style={{
                           width: `${FULL_ROW_WIDTH}px`,
+                          backgroundColor: `${team_data.color}`
                         }}
                       >
                         {team_key}
@@ -788,6 +845,20 @@ export default function Merging(){
                           color="error"
                         >
                           All
+                        </Button>
+                        <Button
+                          className="h-5 w-10 text-xs!"
+                          onClick={() => {
+                            setTeamOrder((prev) => {
+                              const filtered = prev.filter((t) => t !== team_key);
+                              return [team_key, ...filtered];
+                            });
+                            setRebuildLayout(true);
+                          }}
+                          variant="contained"
+                          color="primary"
+                        >
+                          Top
                         </Button>
                       </div>
 
@@ -816,7 +887,7 @@ export default function Merging(){
                             >
                               {/* Task Name */}
                               <div
-                                className="bg-white border-r relative"
+                                className="bg-gray-200  border-r relative"
                                 style={{
                                   display: tasks[task_key].collapsed
                                     ? "none"
@@ -828,27 +899,51 @@ export default function Merging(){
                               >
                                 {task_key}
 
-                                <ZoomOutIcon
-                                  className="absolute top-1 right-1 text-sm! hover:text-blue-200!"
-                                  onClick={() => {
-                                    setTasks((prev) => {
-                                      return {
-                                        ...prev,
-                                        [task_key]: {
-                                          ...prev[task_key],
-                                          collapsed: true,
-                                        },
-                                      };
-                                    });
-                                    setRebuildLayout(true);
-                                  }}
-                                />
+                                <div className="absolute top-1 right-1 flex gap-1">
+                                  <GradeIcon
+                                    className="text-sm! hover:text-yellow-500! cursor-pointer"
+                                    onClick={() => {
+                                      setTeams((prev) => {
+                                        const currentTasks = [...prev[team_key].tasks];
+                                        const taskIndex = currentTasks.indexOf(task_key);
+                                        if (taskIndex > 0) {
+                                          currentTasks.splice(taskIndex, 1);
+                                          currentTasks.unshift(task_key);
+                                        }
+                                        return {
+                                          ...prev,
+                                          [team_key]: {
+                                            ...prev[team_key],
+                                            tasks: currentTasks,
+                                          },
+                                        };
+                                      });
+                                      setRebuildLayout(true);
+                                    }}
+                                  />
+                                  <ZoomOutIcon
+                                    className="text-sm! hover:text-blue-200! cursor-pointer"
+                                    onClick={() => {
+                                      setTasks((prev) => {
+                                        return {
+                                          ...prev,
+                                          [task_key]: {
+                                            ...prev[task_key],
+                                            collapsed: true,
+                                          },
+                                        };
+                                      });
+                                      setRebuildLayout(true);
+                                    }}
+                                  />
+                                </div>
                               </div>
 
                               {/* Milestones */}
                               <div
-                                className="w-full bg-yellow-200 absolute border select-none"
+                                className="bg-gray-200 w-full absolute border select-none"
                                 style={{
+                                  display: tasks[task_key].collapsed ? "none" : "block",
                                   top: "0",
                                   left: `${TASK_WIDTH}px`,
                                   width: `${MILESTONE_ROW_WIDTH}px`,
@@ -866,8 +961,9 @@ export default function Merging(){
                                           milestone_key,
                                         );
                                       }}
-                                      className="bg-purple-200 border absolute select-none"
+                                      className="absolute select-none p-2"
                                       style={{
+                                        display: task.collapsed ? "none" : "flex",
                                         top: `0`,
                                         left: `${milestone.position.x}px`,
 
@@ -877,7 +973,13 @@ export default function Merging(){
                                       }}
                                       key={`${milestone}_${milestone.order_number}`}
                                     >
-                                      {milestone.order_number}
+                                        <div className="bg-white rounded h-full w-full 
+                                        flex justify-center items-center font-bold border border-gray-400
+                                        
+                                        ">
+                                            {milestone.order_number}
+                                        </div>
+                                      
                                     </div>
                                   );
                                 })}
