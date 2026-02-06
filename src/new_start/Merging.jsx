@@ -485,8 +485,11 @@ const FULL_ROW_WIDTH = TASK_ROW_WIDTH + TEAM_WIDTH
 
 const MARGIN_TEAM = 20
 
+// Constants for connection handles
+const HANDLE_SIZE = 12
+const CONNECTION_RADIUS = 20
 
-
+const SNAP_TEAM_FOR_DRAG_Y_PLUS_MINUS = 20
 
 
 
@@ -536,9 +539,7 @@ console.log("Positioned TASKS: ", positioned_Tasks)
 // Add position to Milestone
 const adapted_Milestones = {}
 for (let key in INITIAL_MILESTONES){
-    // console.log("The key", key)
     const milestone = INITIAL_MILESTONES[key]
-    // console.log("The milestone", milestone)
     adapted_Milestones[key] = {
         ...milestone,
         position: {
@@ -559,18 +560,20 @@ console.log("adapted Milestones: ", adapted_Milestones)
 
 
 
-// Constants for connection handles
-const HANDLE_SIZE = 12
-const CONNECTION_RADIUS = 20
+
 
 export default function Merging(){
     const [teamOrder, setTeamOrder] = useState(INITAL_TEAM_ORDER)
     const [teams, setTeams] = useState(positioned_teams)
+    const [draggedTeam, setDraggedTeam] = useState(null)
+
     const [tasks, setTasks] = useState(positioned_Tasks)
     const [milestones, setMilestones] = useState(adapted_Milestones)
+    const [selectedMilestone, setSelectedMilestone] = useState(null)
+
     const [days, setDays] = useState({})
     const [rebuildLayout, setRebuildLayout] = useState(0)
-    const [totalHeight, setTotalHeight] = useState(100)
+    // const [totalHeight, setTotalHeight] = useState(100)
     
     // Connection state
     const [isDraggingConnection, setIsDraggingConnection] = useState(false)
@@ -584,11 +587,8 @@ export default function Merging(){
 
 
     const getDisplayedTeamTasks = (team_key) => {
-        // console.log("CALLED CORRECTLY HERE", team_key)
         const raw_tasks = teams[team_key].tasks
-        // console.log("the tasks", raw_tasks)
         const activeTasks = raw_tasks.filter(task => !tasks[task].collapsed)
-        // console.log("Active Tasks", activeTasks)
         return activeTasks
     }
 
@@ -741,26 +741,17 @@ export default function Merging(){
             }
             accumalted_height += height_added
         }
-        // console.log("NEWLY POSITIONED TEAMS: ", newly_positioned_teams)
         setTeams(newly_positioned_teams)
-        setTotalHeight(accumalted_height)
-        console.log("ACUMALTED HEIGHT", accumalted_height)
+        // setTotalHeight(accumalted_height)
         
 
         const newly_postioned_tasks = {}
-        // console.log("UPDATING POSITION ACCORDINGLY")
         for (let task_key in tasks){
-            // console.log("TASK Name", task_key)
             const task = tasks[task_key]
-            
-            // console.log("TASK HEREEEEEEEEEEE", task.collapsed)
             
             const visibleTasks = getDisplayedTeamTasks(task.team)
 
             const task_index_in_group = visibleTasks.indexOf(task_key)
-
-            // console.log("CURRENT INDEX: ", task_index_in_group)
-
 
             let height = TASK_HEIGHT * task_index_in_group + MARGIN_TEAM /2
 
@@ -782,9 +773,7 @@ export default function Merging(){
 
         const newly_positioned_milestones = {}
         for (let milestone_key in milestones) {
-            // console.log("Milestone key: ", milestone_key)
             const milestone = milestones[milestone_key]
-            // console.log("Milestone: ", milestone)
             newly_positioned_milestones[milestone_key] = {
                 ...milestone, 
                 position: {
@@ -830,8 +819,7 @@ export default function Merging(){
         event.stopPropagation()
         const startX = event.clientX - milestones[milestone_key].position.x
         const startY = event.clientY - milestones[milestone_key].position.y
-        console.log("STARTX, STARTY: ", startX, startY)
-        let new_x = startX
+        let new_x = milestones[milestone_key].position.x
 
         const handleMouseMoveMilestone = (event) => {
             new_x = event.clientX - startX
@@ -845,7 +833,6 @@ export default function Merging(){
                 new_x = TASK_ROW_WIDTH - TASK_WIDTH - milestones[milestone_key].position.width
             }
             
-            console.log("New X and New Y: ", new_x, new_y)
             setMilestones((prev)=>{
                 return ({
                     ...prev, 
@@ -864,7 +851,6 @@ export default function Merging(){
             audio.play();
             const snappedX = Math.round(new_x / DAY_WIDTH) * DAY_WIDTH
             const new_index = snappedX / DAY_WIDTH
-            console.log("SNAPPED: ", snappedX, new_index)
             setMilestones((prev)=>{
                 return ({
                     ...prev, 
@@ -892,7 +878,61 @@ export default function Merging(){
     }
 
 
+    const handleTeamDrag = (event, team_key) => {
+      setDraggedTeam(team_key)
+      const startY = event.clientY - teams[team_key].position.y
+      let drop_y = startY
 
+      const onMouseMove = (e) => {
+        const new_y = e.clientY - startY
+        drop_y = new_y
+        setTeams((prev)=> {
+          return ({
+            ...prev, 
+            [team_key]: {
+              ...prev[team_key],
+              position: {
+                ...prev[team_key].position,
+                y: new_y
+              }
+            }
+          })
+        })
+      }
+
+
+      const onMouseUp = () => {
+        for (let compare_team_key in teams) {
+          const compare_team = teams[compare_team_key]
+          const compare_team_y = compare_team.position.y
+
+          if (
+            drop_y < compare_team_y + SNAP_TEAM_FOR_DRAG_Y_PLUS_MINUS && 
+            drop_y > compare_team_y - SNAP_TEAM_FOR_DRAG_Y_PLUS_MINUS
+          ) {
+
+            const compare_team_index = teamOrder.indexOf(compare_team_key)
+            const drag_team_index =  teamOrder.indexOf(team_key)
+            const swappedList = [...teamOrder]
+
+            const [popped_element] = swappedList.splice(drag_team_index, 1)
+            swappedList.splice(compare_team_index, 0, popped_element);
+            setTeamOrder(swappedList);
+            
+            break
+          }
+          setRebuildLayout(true)
+        }
+
+        document.removeEventListener("mousemove", onMouseMove)
+        document.removeEventListener("mouseup", onMouseUp)
+        setDraggedTeam(null)
+
+      }
+
+      document.addEventListener("mousemove", onMouseMove)
+      document.addEventListener("mouseup", onMouseUp)
+    }
 
 
 
@@ -901,7 +941,7 @@ export default function Merging(){
 
     return (
       <>
-        <div className="h-2000 p-10 bg-gray-500">
+        <div className="h-1000 p-10 bg-gray-500">
             <Button 
                 onClick={()=>{setRebuildLayout(true)}}
                 variant="contained" 
@@ -994,7 +1034,6 @@ export default function Merging(){
             {Object.entries(days).map(([day, position])=>{
 
                 // FOR SOME REASON THE POSITION IS CORRECT; DONT ASK ME WHYX
-                // console.log("THE DAYS", position)
                 return (
                     <div
                     className="absolute border pointer-events-none"
@@ -1033,22 +1072,26 @@ export default function Merging(){
                       left: `${team_data.position.x}px`,
                       height: `${team_data.position.height}px`,
                       width: `${team_data.position.width}px`,
+                      
                     }}
                     key={team_key}
                   >
                     {/* CONTENT */}
-                    <div className="flex justify-between h-full">
+                    <div className="flex justify-between h-full select-none">
                       {/* Team Name */}
                       <div
+                        onMouseDown={(e)=>{handleTeamDrag(e, team_key)}}
                         className=" relative flex flex-col"
                         style={{
                           width: `${FULL_ROW_WIDTH}px`,
-                          backgroundColor: `${team_data.color}`
+                          backgroundColor: `${team_data.color}`,
+                          zIndex: draggedTeam == team_key ? "1" : 0
                         }}
                       >
                         {team_key}
                         <Button
                           className="h-5 w-10 text-xs!"
+                          onMouseDown={(e) => e.stopPropagation()}
                           onClick={() => {
                             setTasks((prev) => {
                               const updatedTasks = { ...prev };
@@ -1072,6 +1115,7 @@ export default function Merging(){
                         </Button>
                         <Button
                           className="h-5 w-10 text-xs!"
+                          onMouseDown={(e) => e.stopPropagation()}
                           onClick={() => {
                             setTeamOrder((prev) => {
                               const filtered = prev.filter((t) => t !== team_key);
@@ -1106,6 +1150,7 @@ export default function Merging(){
                               style={{
                                 width: `${task.position.width}px`,
                                 top: `${task.position.y}px`,
+                                zIndex: draggedTeam == team_key ? "100" : 0
                                 // paddingLeft: `${TEAM_WIDTH}px`ssdf
                               }}
                             >
@@ -1118,6 +1163,7 @@ export default function Merging(){
                                     : "block",
                                   height: `${TASK_HEIGHT}px`,
                                   width: `${TASK_WIDTH}px`,
+                                  zIndex: draggedTeam == team_key ? "1" : 0
                                 }}
                                 key={task_key}
                               >
@@ -1172,10 +1218,10 @@ export default function Merging(){
                                   left: `${TASK_WIDTH}px`,
                                   width: `${MILESTONE_ROW_WIDTH}px`,
                                   height: `${TASK_HEIGHT}px`,
+                                  zIndex: draggedTeam == team_key ? "1" : 0
                                 }}
                               >
                                 {task.milestones.map((milestone_key) => {
-                                  // console.log("milestone here", milestone_key)
                                   const milestone = milestones[milestone_key];
                                   return (
                                     <div
@@ -1197,10 +1243,24 @@ export default function Merging(){
                                       }}
                                       key={`${milestone}_${milestone.order_number}`}
                                     >
-                                        <div className="bg-white rounded h-full w-full 
+                                        <div 
+                                        onClick={()=>{
+                                          if (milestone_key == selectedMilestone) {
+                                            setSelectedMilestone(null)
+                                          } else {
+                                            setSelectedMilestone(milestone_key)
+                                          }
+
+                                        }}
+                                        className=" rounded h-full w-full 
                                         flex justify-center items-center font-bold border border-gray-400
                                         relative group
-                                        ">
+                                        "
+                                        style={{
+                                          backgroundColor: milestone_key === selectedMilestone ? "blue" : "white"
+                                        }}
+                                        >
+                                        
                                             {milestone.order_number}
                                             
                                             {/* Target Handle (Left) */}
